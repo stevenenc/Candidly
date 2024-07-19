@@ -13,8 +13,11 @@ app.get('/', (req, res) => {
   res.send('Candidly Backend');
 });
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB database connection established successfully"))
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() =>
+    console.log('MongoDB database connection established successfully'),
+  )
   .catch(err => console.log(err));
 
 app.listen(port, () => {
