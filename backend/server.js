@@ -6,10 +6,10 @@ const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User'); // Import the User model
-const {
-  registerValidationRules,
-  validate,
-} = require('./validators/authValidators');
+// const {
+//   registerValidationRules,
+//   validate,
+// } = require('./validators/authValidators');
 require('dotenv').config(); // Load environment variables from .env file
 
 // Initialize Express app
@@ -22,6 +22,7 @@ var corsOptions = {
 };
 
 // Middleware setup
+app.use(cors(corsOptions));
 app.use(express.json()); // Parse requests with content-type - application/json
 app.use(express.urlencoded({extended: true})); // Parse requests with content-type - application/x-www-form-urlencoded
 
@@ -35,9 +36,10 @@ app.use(
 );
 
 // Route for user registration
-app.post('/register', registerValidationRules(), validate, async (req, res) => {
+app.post('/register', async (req, res) => {
   try {
     const {username, email, password} = req.body; // Extract data from request body
+    console.log('Registering user:', {username, email, password});
 
     // Check if the user already exists
     const existingUser = await User.findOne({email});
@@ -46,7 +48,9 @@ app.post('/register', registerValidationRules(), validate, async (req, res) => {
     }
 
     // Hash the password before saving
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    console.log('Hashed password:', hashedPassword);
 
     // Create a new user instance
     const newUser = new User({
@@ -72,15 +76,27 @@ app.post('/login', async (req, res) => {
   try {
     const {email, password} = req.body; // Extract data from request body
 
+    console.log('Email:', email);
+    console.log('Password:', password);
+
     // Find the user by email
     const user = await User.findOne({email});
     if (!user) {
+      console.log('User not found');
       return res.status(400).send({message: 'Invalid email or password'});
     }
 
+    console.log('User found:', user);
+    console.log('Comparing passwords:');
+    console.log('Plain password:', password);
+    console.log('Hashed password:', user.password);
+
     // Compare the provided password with the stored hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log('Is password valid:', isPasswordValid);
+
     if (!isPasswordValid) {
+      console.log('Invalid password');
       return res.status(400).send({message: 'Invalid password'});
     }
 
@@ -90,7 +106,7 @@ app.post('/login', async (req, res) => {
     });
 
     // Send the token back to the client
-    res.send({token});
+    res.status(200).send({token});
   } catch (err) {
     // Handle errors and send error response
     res.status(500).send({message: 'Internal server error'});
