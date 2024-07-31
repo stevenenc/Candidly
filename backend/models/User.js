@@ -26,10 +26,10 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
       minlength: 7,
-      validate: {
-        validator: value => !value.toLowerCase().includes('password'),
-        message: 'Password cannot contain "password"',
-      },
+      // validate: {
+      //   validator: value => !value.toLowerCase().includes('password'),
+      //   message: 'Password cannot contain "password"',
+      // },
     },
   },
   {
@@ -38,12 +38,12 @@ const userSchema = new mongoose.Schema(
 );
 
 // Hashing new created password and modified password
-userSchema.pre('save', async function (next) {
-  const user = this;
-  if (user.isModified('password')) {
-    user.password = await bcrypt.hash(user.password, 8);
-  }
-  next();
-});
+// userSchema.pre('save', async function (next) {
+//   const user = this;
+//   if (user.isModified('password')) {
+//     user.password = await bcrypt.hash(user.password, 8);
+//   }
+//   next();
+// });
 
 module.exports = mongoose.model('User', userSchema);
