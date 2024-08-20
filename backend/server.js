@@ -6,6 +6,7 @@ const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User'); // Import the User model
+const authMiddleware = require('./middlewares/auth');
 // const {
 //   registerValidationRules,
 //   validate,
@@ -127,6 +128,11 @@ app.get('/set-session', (req, res) => {
 // Route to get the session variable
 app.get('/get-session', (req, res) => {
   res.send(`Session variable 'user' is: ${req.session.user}`);
+});
+
+// Protected route
+app.get('/protected-route', authMiddleware, (req, res) => {
+  res.send('This is a protected route');
 });
 
 // Connect to MongoDB database
