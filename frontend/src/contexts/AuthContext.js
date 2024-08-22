@@ -26,8 +26,35 @@ export const AuthProvider = ({children}) => {
     await AsyncStorage.removeItem('user');
   };
 
+  const register = async (username, email, password) => {
+    const userData = {username, email, password};
+
+    try {
+      const response = await fetch('http://10.0.2.2:5000/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      console.log('Response status:', response.status); // Log the status code
+
+      if (response.ok) {
+        const result = await response.json();
+        setUser(result.user);
+        await AsyncStorage.setItem('user', JSON.stringify(result.user));
+      } else {
+        const errorResponse = await response.json(); // Fetch the error message from the server
+        console.error('Registration failed:', errorResponse.message); // Log the server error message
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{user, login, logout}}>
+    <AuthContext.Provider value={{user, login, logout, register}}>
       {children}
     </AuthContext.Provider>
   );
