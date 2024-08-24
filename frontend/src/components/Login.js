@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-undef */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useContext} from 'react';
-import {View, TextInput, Button} from 'react-native';
+import {View, TextInput, Button, Text} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AuthContext from '../contexts/AuthContext';
 
