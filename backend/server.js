@@ -116,8 +116,11 @@ app.post('/login', async (req, res) => {
       expiresIn: '1h', // Token expires in 1 hour
     });
 
-    // Send the token back to the client
-    res.status(200).send({token});
+    // Send the token and user data back to the client
+    res.status(200).send({
+      token,
+      user: {id: user._id, email: user.email, username: user.username},
+    });
   } catch (err) {
     // Handle errors and send error response
     res.status(500).send({message: 'Internal server error'});
