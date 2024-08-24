@@ -8,11 +8,17 @@ import AuthContext from '../contexts/AuthContext';
 const LoginComponent = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
   const {login} = useContext(AuthContext);
   const navigation = useNavigation();
 
-  const handleLogin = () => {
-    login(email, password);
+  const handleLogin = async () => {
+    try {
+      await login(email, password);
+    } catch (e) {
+      // If an error occurs, update the error state
+      setError(e.message);
+    }
   };
 
   return (
@@ -40,6 +46,9 @@ const LoginComponent = () => {
           borderRadius: 5,
         }}
       />
+      {error && <Text style={{color: 'red'}}>{error}</Text>}
+      <Text> </Text>
+      {/* Display error message */}
       <Button title="Login" onPress={handleLogin} />
       <Text style={{marginVertical: 20, textAlign: 'center'}}>OR</Text>
       <Button title="Sign Up" onPress={() => navigation.navigate('Register')} />

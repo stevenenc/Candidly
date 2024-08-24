@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import React, {createContext, useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -16,9 +17,31 @@ export const AuthProvider = ({children}) => {
     loadUser();
   }, []);
 
-  const login = async userData => {
-    setUser(userData);
-    await AsyncStorage.setItem('user', JSON.stringify(userData));
+  const login = async (email, password) => {
+    try {
+      const response = await fetch('http://10.0.2.2:5000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({email, password}),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setUser(result.user);
+        await AsyncStorage.setItem('user', JSON.stringify(result.user));
+      } else {
+        // Handle the error response
+        const errorResponse = await response.json();
+        console.error('Login failed:', errorResponse.message);
+        //You can use the message to display it to the user in your UI
+        alert(errorResponse.message);
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      alert('An error occurred during login. Please try again later.');
+    }
   };
 
   const logout = async () => {
