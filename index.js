@@ -18,13 +18,10 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Register">
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Register" component={Register} />
-        {user ? (
-          <Stack.Screen name="Dashboard" component={Dashboard} />
-        ) : (
-          <Stack.Screen name="Login" component={Login} />
-        )}
+        {user && <Stack.Screen name="Dashboard" component={Dashboard} />}
       </Stack.Navigator>
     </NavigationContainer>
   );
