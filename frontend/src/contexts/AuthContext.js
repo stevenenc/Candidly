@@ -70,9 +70,11 @@ export const AuthProvider = ({children}) => {
       } else {
         const errorResponse = await response.json(); // Fetch the error message from the server
         console.error('Registration failed:', errorResponse.message); // Log the server error message
+        throw new Error(errorResponse.message);
       }
     } catch (error) {
-      console.error('Error during registration:', error);
+      throw error;
+      // console.error('Error during registration:', error);
     }
   };
 
