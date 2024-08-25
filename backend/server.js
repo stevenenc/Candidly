@@ -20,7 +20,6 @@ const port = process.env.PORT || 5000;
 // CORS options to allow requests from specific origins
 var corsOptions = {
   origin: 'http://localhost:8081',
-  // origin: '*',
 };
 
 // Middleware setup
@@ -44,8 +43,14 @@ app.post('/register', async (req, res) => {
     console.log('Registering user:', {username, email, password});
 
     // Check if the user already exists
-    const existingUser = await User.findOne({email});
+    const existingUser = await User.findOne({username});
     if (existingUser) {
+      return res.status(400).send({message: 'Username already in use'});
+    }
+
+    // Check if the email already exists
+    const existingEmail = await User.findOne({email});
+    if (existingEmail) {
       return res.status(400).send({message: 'Email already in use'});
     }
 
@@ -59,15 +64,6 @@ app.post('/register', async (req, res) => {
       username,
       email,
       password: hashedPassword,
-    });
-
-    // After successfully registering the user
-    res.status(200).send({
-      user: {
-        id: newUser._id,
-        username: newUser.username,
-        email: newUser.email,
-      },
     });
 
     // Save the new user to the database
@@ -116,11 +112,8 @@ app.post('/login', async (req, res) => {
       expiresIn: '1h', // Token expires in 1 hour
     });
 
-    // Send the token and user data back to the client
-    res.status(200).send({
-      token,
-      user: {id: user._id, email: user.email, username: user.username},
-    });
+    // Send the token back to the client
+    res.status(200).send({token});
   } catch (err) {
     // Handle errors and send error response
     res.status(500).send({message: 'Internal server error'});
