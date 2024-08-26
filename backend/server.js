@@ -54,6 +54,17 @@ app.post('/register', async (req, res) => {
       return res.status(400).send({message: 'Email already in use'});
     }
 
+    // Check if there are missing fields
+    const missingFields = ['username', 'email', 'password'].filter(
+      field => !req.body[field],
+    );
+
+    if (missingFields.length > 0) {
+      return res.status(400).send({
+        message: `Missing required fields: ${missingFields.join(', ')}`,
+      });
+    }
+
     // Hash the password before saving
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
